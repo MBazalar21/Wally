@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wally</title>
+</head>
+<body>
+
+    <h1>Prueba Wally</h1>
+
+    <form id="form" submit="http://localhost:3000/users/cliente/ver">
+        <div>
+            <label for="dni">Dni</label>
+            <input type="text" placeholder="Ingrese Dni" id="dni" name="dni">
+        </div>
+        <br>
+        <div>
+            <label for="nombre">Nombre</label>
+            <input type="text" placeholder="Ingrese nombre" id="nombre" name="nombre">
+        </div>
+        <br>
+        <div>
+            <button type="submit">Enviar</button>
+        </div>
+    </form>
+    <br>
+
+    <label>Este es el registro:</label>
+    <br>
+    <label class="dni_aqui">Dni: <b></b></label>
+    <br>
+    <label class="nom_aqui">Nombre: <b></b></label>
+    <br>
+    <br>
+    
+    <button id="invertir">Invertir</button>
+    <br>
+    <br>
+    <label class="nom_aqui_inv">Nombre Invertido: <b></b></label>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
+    <script>
+        (function(){
+            // código
+        })(
+            console.log("hola mundo")
+        );
+
+        $("form").on("submit", function( event ) { // Porque es on('submit') ???
+
+            // console.log( $(this).serialize() ) // Crea una string de los elementos del formulario(form object)
+            let dni = $("#dni").val();
+            let nombre = $("#nombre").val();
+            event.preventDefault(); // evitar lo que pasaría por default así puedo enviar po ajax ???
+
+            // // 1. open ajax request post (url im requesting / data from form(serializing) / datos que le pasare)
+            $.post({
+                //2. STRING que contenga la url a la que se hace la petición => JSON => {"saludo":"\u00a1Hola !, vengo desde el servidor.","teléfono":"Tu tel\u00e9fono es el ","horario":"No te llamaremos si no es en horario de ","apunte":"\u00a1Una pena que tengas tan poca satisfacci\u00f3n!"}
+                url:'http://localhost:3000/users/cliente/ver',
+                //3. OBJETO puro o STRING que es enviado al servidor para la peticion(campoNombre=fran&campoTelefono=61999&horario=ma%C3%B1anas&satisfaccion=10&politica=on)
+                data: {
+                    dni,
+                    nombre
+                },
+                //4. FUNCIÓN que retorna la información, la respuesta de ajax (le paso lo que sea, datos sera mi objeto y saludo mi propiedad => datos.saludo), 'success' = KEYWORD!
+                //RESPUESTA => ¡Hola fran!, vengo desde el servidor.<br>Tu teléfono es el 61999<br>No te llamaremos si no es en horario de mañanas<br>¡Una pena que tengas tan poca satisfacción!
+                success: function(datos) {
+                    // let texto = datos.saludo + '<br>' + datos.telefono + '<br>' + datos.horario + '<br>' + datos.apunte;
+                    // msg(texto, 1);
+                    console.log(datos);
+                    console.log(datos.mensaje);
+                    console.log(datos.dni);
+                    $(".dni_aqui b").append(datos.dni)
+                    
+                    console.log(datos.nombre);
+                    $(".nom_aqui b").append(datos.nombre)
+
+                    localStorage.setItem('nombre',datos.nombre)
+                }
+            });
+        });
+
+        function reverse(s){
+            return s.split("").reverse().join("");
+        }
+
+        $("#invertir").click(function(){
+            let nombre_str= localStorage.getItem('nombre');
+            let invertido = reverse(nombre_str)
+
+            $(".nom_aqui_inv b").append(invertido)
+
+        });
+
+    </script>
+
+</body>
+</html>
